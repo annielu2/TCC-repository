@@ -13,7 +13,7 @@ from transformers import (
 from peft import LoraConfig
 from trl import SFTTrainer
 
-
+#Essa função é responsável por ler e separar o dataset em treinamento, validação e teste
 def get_data():
     csv_files = glob.glob('CachacaNER/csv/particao_*.csv')
 
@@ -47,9 +47,11 @@ def main():
     #base_model = 'berchielli/cabrita-7b-pt-br'
 
     new_model = 'sabia-2-7b-cachaca-ner'
+    #new_model = 'cabrita2-7b-cachaca-ner'
 
     compute_dtype = getattr(torch, "float16")
 
+    #Configurando parâmetros de quantização
     quant_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
@@ -100,7 +102,7 @@ def main():
         report_to="tensorboard"
     )
 
-
+    #Criando 
     trainer = SFTTrainer(
         model=model,
         train_dataset=train_dataset,
@@ -122,7 +124,8 @@ def main():
     trainer.model.save_pretrained(new_model)
     trainer.tokenizer.save_pretrained(new_model)
 
-    predictions = model.predict(test_dataset)
+    #Verificar os resultados das predições
+    predictions = train_result.predict(test_dataset)
 
     print(predictions)
 
